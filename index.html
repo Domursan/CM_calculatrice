@@ -3,18 +3,515 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Générateur de Devis - Castle Marius</title>
+  <title>Calculatrice Château Marius</title>
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <script src="https://cdn.tailwindcss.com"></script>
+  
   <style>
+    /* ========================================
+       RESET & BASE
+       ======================================== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+
+    /* ========================================
+       VARIABLES GLOBALES
+       ======================================== */
+    :root {
+      /* Couleurs de fond */
+      --bg-primary: #2e2e2e;
+      --bg-secondary: #2e2e2e;
+      --bg-card: #2e2e2e;
+      --bg-input: #2e2e2e;
+      
+      /* Bordures */
+      --border-primary: #9a2243;
+      --border-secondary: #b74162;
+      
+      /* Textes */
+      --text-primary: rgb(232, 232, 232);
+      --text-secondary: rgb(232, 232, 232);
+      --text-light: rgb(232, 232, 232);
+      
+      /* Focus */
+      --focus-purple: #9a2243;
+      --focus-orange: #9a2243;
+    }
+
+    /* ========================================
+       ANIMATIONS
+       ======================================== */
     @keyframes fadeIn {
       from { opacity: 0; }
       to { opacity: 1; }
     }
     .animate-fadeIn {
       animation: fadeIn 0.3s ease-in;
+    }
+
+    /* ========================================
+       CONTENEUR PRINCIPAL
+       ======================================== */
+    .main-container {
+      min-height: 100vh;
+      background: #2e2e2e;
+      padding: 1rem;
+    }
+    @media (min-width: 768px) {
+      .main-container {
+        padding: 2rem;
+      }
+    }
+
+    /* ========================================
+       CARTE PRINCIPALE
+       ======================================== */
+    .main-card {
+      max-width: 80rem;
+      margin: 0 auto;
+      background: var(--bg-card);
+      backdrop-filter: blur(12px);
+      border-radius: 1rem;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      border: 1px solid var(--border-secondary);
+      overflow: hidden;
+    }
+    
+    .main-padding {
+      padding: 1.5rem;
+    }
+    @media (min-width: 768px) {
+      .main-padding {
+        padding: 2rem;
+      }
+    }
+
+    /* ========================================
+       SECTION BOUTONS (Grille)
+       ======================================== */
+    .button-section {
+      margin-bottom: 2rem;
+    }
+    .button-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    @media (max-width: 640px) {
+      .button-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ========================================
+       BOUTON PRIX/POIDS
+       ======================================== */
+    .btn-prixpoids { 
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1rem;
+      color: white;
+      border: none;
+      border-radius: 0.5rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+      font-size: 1.125rem;
+      font-weight: 700;
+      background: #9a2243;
+      cursor: default;
+    }
+
+    /* ========================================
+       BOUTON GÉNÉRER LIBELLÉ
+       ======================================== */
+    .btn-genererlibelle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1rem;
+      color: white;
+      border: none;
+      border-radius: 0.5rem;
+      transition: all 0.2s;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      background: #9a2243;
+    }
+    .btn-genererlibelle:hover {
+      background: #b74162;
+    }
+    .btn-genererlibelle:disabled {
+      background: rgb(107, 108, 110);
+      text-decoration: line-through;
+      cursor: not-allowed;
+    }
+
+    /* ========================================
+       BOUTON RÉINITIALISER
+       ======================================== */
+    .btn-reinitialiser {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1rem;
+      color: white;
+      border: none;
+      border-radius: 0.5rem;
+      transition: all 0.2s;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      background: rgb(140, 22, 22);
+    }
+    .btn-reinitialiser:hover {
+      background: rgb(185, 28, 28);
+    }
+
+    /* ========================================
+       BOUTON CARTE DU CHÂTEAU
+       ======================================== */
+    .btn-cartechateau {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1rem;
+      color: white;
+      border: none;
+      border-radius: 0.5rem;
+      transition: all 0.2s;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      background: #9a2243;
+    }
+    .btn-cartechateau:hover {
+      background: #b74162;
+    }
+
+    /* ========================================
+       BOUTON NOUVEL ARRIVANT
+       ======================================== */
+    .btn-nouvelarrivant {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1rem;
+      color: white;
+      border: none;
+      border-radius: 0.5rem;
+      transition: all 0.2s;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      background: #9a2243;
+    }
+    .btn-nouvelarrivant:hover {
+      background: #b74162;
+    }
+
+    /* Popup Nouvel Arrivant */
+    .popup-icon-nouvelarrivant { 
+      padding: 0.75rem;
+      border-radius: 9999px;
+      background: #2e2e2e;
+      color: #9a2243;
+    }
+
+    /* ========================================
+       BOUTON SERVICE PUBLIC
+       ======================================== */
+    .btn-servicepublic {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1rem;
+      color: white;
+      border: none;
+      border-radius: 0.5rem;
+      transition: all 0.2s;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      background: #9a2243;
+    }
+    .btn-servicepublic:hover {
+      background: #b74162;
+    }
+
+    /* Popup Service Public */
+    .popup-icon-servicepublic { 
+      padding: 0.75rem;
+      border-radius: 9999px;
+      background: #2e2e2e;
+      color: #9a2243;
+    }
+
+    /* ========================================
+       SELECT RÉDUCTION
+       ======================================== */
+    .select-reduction {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 2px solid var(--border-primary);
+      background: var(--bg-input);
+      color: var(--text-primary);
+      border-radius: 0.5rem;
+      outline: none;
+      font-weight: 500;
+      font-size: 1rem;
+    }
+    .select-reduction:focus {
+      border-color: var(--focus-orange);
+      box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.2);
+    }
+
+    /* ========================================
+       POPUPS (Structure générale)
+       ======================================== */
+    .popup-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      z-index: 50;
+      padding: 1rem;
+      padding-top: 5rem;
+    }
+    .popup-card {
+      background: rgb(30, 41, 59);
+      border: 1px solid var(--border-secondary);
+      border-radius: 0.75rem;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      max-width: 28rem;
+      width: 100%;
+      padding: 1.5rem;
+      transform: scale(1);
+      transition: all 0.3s;
+    }
+    .popup-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .popup-title {
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+    .popup-text {
+      color: var(--text-light);
+      line-height: 1.6;
+    }
+
+    /* ========================================
+       MESSAGE DE COPIE
+       ======================================== */
+    .copy-message {
+      margin-bottom: 1.5rem;
+      padding: 1rem;
+      background: rgba(1, 58, 24, 0.75);
+      border-left: 4px solid rgb(0, 122, 45);
+      border-radius: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: rgb(255, 255, 255);
+    }
+
+    /* ========================================
+       CATÉGORIES
+       ======================================== */
+    .categories-container {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+    .category-card {
+      background: rgba(51, 65, 85, 0.5);
+      border-radius: 0.75rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border-primary);
+      overflow: hidden;
+    }
+    .category-header {
+      width: 100%;
+      padding: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: background 0.2s;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+    .category-header:hover {
+      background: rgb(51, 65, 85);
+    }
+    .category-title-container {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .category-emoji {
+      font-size: 1.875rem;
+    }
+    .category-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    .category-count {
+      font-size: 0.875rem;
+      font-weight: 400;
+      color: var(--text-secondary);
+      margin-left: 0.5rem;
+    }
+    .category-icon {
+      color: var(--text-secondary);
+    }
+    .category-content {
+      padding: 1.5rem;
+      padding-top: 0;
+    }
+
+    /* ========================================
+       PRODUITS
+       ======================================== */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+    @media (max-width: 640px) {
+      .product-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .product-card {
+      background: var(--bg-secondary);
+      border-radius: 0.5rem;
+      padding: 1rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+      transition: box-shadow 0.3s;
+      border: 1px solid var(--border-primary);
+    }
+    .product-card:hover {
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+    }
+    .product-header {
+      margin-bottom: 0.75rem;
+    }
+    .product-name {
+      font-weight: 700;
+      color: #9a2243;
+      text-decoration: underline;
+      margin-bottom: 0.25rem;
+      font-size: 1.5rem;
+    }
+    .product-price {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #c8355c;
+    }
+    .product-weight {
+      font-size: 1rem;
+      color: #ffffff;
+    }
+
+    /* ========================================
+       BOUTON MOINS (-)
+       ======================================== */
+    .btn-moins {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 0.5rem;
+      font-weight: 700;
+      font-size: 1.25rem;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      border: none;
+      cursor: pointer;
+      background: rgb(185, 28, 28);
+    }
+    .btn-moins:hover {
+      background: rgb(220, 38, 38);
+      transform: scale(1.1);
+    }
+
+    /* ========================================
+       INPUT QUANTITÉ
+       ======================================== */
+    .quantity-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .quantity-input {
+      flex: 1;
+      padding: 0.5rem 0.75rem;
+      border: 2px solid var(--border-primary);
+      background: var(--bg-input);
+      color: var(--text-primary);
+      border-radius: 0.5rem;
+      text-align: center;
+      font-weight: 700;
+      font-size: 1.125rem;
+      outline: none;
+    }
+    .quantity-input:focus {
+      border-color: var(--focus-purple);
+      box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.2);
+    }
+
+    /* ========================================
+       BOUTON PLUS (+)
+       ======================================== */
+    .btn-plus {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 0.5rem;
+      font-weight: 700;
+      font-size: 1.25rem;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      border: none;
+      cursor: pointer;
+      background: rgb(0, 87, 32);
+    }
+    .btn-plus:hover {
+      background: rgb(0, 131, 48);
+      transform: scale(1.1);
     }
   </style>
 </head>
@@ -24,10 +521,9 @@
   <script type="text/babel">
     const { useState } = React;
 
-    // Icônes Lucide simplifiées en SVG
     const Icons = {
       Users: () => (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
           <circle cx="9" cy="7" r="4"/>
           <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
@@ -35,49 +531,41 @@
         </svg>
       ),
       Building2: () => (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M3 21h18"/>
-          <path d="M5 21V7l8-4v18"/>
-          <path d="M19 21V11l-6-4"/>
-          <path d="M9 9v.01"/>
-          <path d="M9 12v.01"/>
-          <path d="M9 15v.01"/>
-          <path d="M9 18v.01"/>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/>
+          <path d="M9 9v.01"/><path d="M9 12v.01"/><path d="M9 15v.01"/><path d="M9 18v.01"/>
         </svg>
       ),
       Copy: () => (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
           <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
         </svg>
       ),
       FileText: () => (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-          <polyline points="14 2 14 8 20 8"/>
-          <line x1="16" y1="13" x2="8" y2="13"/>
-          <line x1="16" y1="17" x2="8" y2="17"/>
-          <polyline points="10 9 9 9 8 9"/>
+          <polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/>
+          <line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
         </svg>
       ),
       RotateCcw: () => (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <polyline points="1 4 1 10 7 10"/>
-          <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
         </svg>
       ),
       ChevronDown: () => (
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <polyline points="6 9 12 15 18 9"/>
         </svg>
       ),
       ChevronRight: () => (
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <polyline points="9 18 15 12 9 6"/>
         </svg>
       ),
       CheckCircle: () => (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
           <polyline points="22 4 12 14.01 9 11.01"/>
         </svg>
@@ -130,7 +618,7 @@
         ]
       };
 
-      const infoNouvelArrivant = "Starter pack soit : 8 moyens jus, 6 grands plats, 4 petits extras";
+      const infoNouvelArrivant = "Starter pack soit : 8 moyens jus, 6 grands plats, 4 petits extras + 1 bouteille de vin à choix lors du premier passage";
       const infoServicePublic = "14 moyens jus, 8 grands plats (2 viande, 4 végés, 2 poisson), 2 grand extras";
       const carteChateauImage = "https://i.ibb.co/Mx9nSRvT/MENU-CM.png";
 
@@ -151,12 +639,7 @@
       const updateQuantity = (product, category, newQuantity) => {
         const qty = Math.max(0, parseInt(newQuantity) || 0);
         const productKey = `${category}-${product.name}`;
-        
-        setQuantities(prev => ({
-          ...prev,
-          [productKey]: qty
-        }));
-
+        setQuantities(prev => ({ ...prev, [productKey]: qty }));
         const existingItems = cart.filter(item => !(item.category === category && item.name === product.name));
         const newItems = [];
         for (let i = 0; i < qty; i++) {
@@ -174,9 +657,7 @@
       const decrementQuantity = (product, category) => {
         const productKey = `${category}-${product.name}`;
         const currentQty = quantities[productKey] || 0;
-        if (currentQty > 0) {
-          updateQuantity(product, category, currentQty - 1);
-        }
+        if (currentQty > 0) updateQuantity(product, category, currentQty - 1);
       };
 
       const getQuantity = (product, category) => {
@@ -205,10 +686,7 @@
       };
 
       const toggleCategory = (category) => {
-        setExpandedCategories(prev => ({
-          ...prev,
-          [category]: !prev[category]
-        }));
+        setExpandedCategories(prev => ({ ...prev, [category]: !prev[category] }));
       };
 
       const resetForm = () => {
@@ -221,9 +699,7 @@
       const generateLibelle = () => {
         const groupedProducts = cart.reduce((acc, item) => {
           const key = item.name;
-          if (!acc[key]) {
-            acc[key] = 0;
-          }
+          if (!acc[key]) acc[key] = 0;
           acc[key] += 1;
           return acc;
         }, {});
@@ -248,189 +724,136 @@
       };
 
       const totals = calculateTotal();
+      const categoryEmojis = {
+        'Formules': '📦',
+        'Boissons': '🥤',
+        'Plats / Snacks': '🍽️',
+        'Vins': '🍷',
+        'Halloween 2025': '🎃'
+      };
 
       return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-4 md:p-8">
-          <div className="max-w-7xl mx-auto">
-            <div className="bg-slate-800/95 backdrop-blur rounded-2xl shadow-2xl overflow-hidden border border-slate-700">
-              <div className="p-6 md:p-8">
-                <div className="space-y-4 mb-8">
-                  <div className="grid grid-cols-3 gap-4">
-                    <div className="flex items-center justify-center gap-2 px-4 py-3 bg-purple-600 text-white rounded-lg shadow-lg font-bold text-lg">
-                      {totals.total}$ ({totals.weight} kg)
+        <div className="main-container">
+          <div className="main-card">
+            <div className="main-padding">
+              <div className="button-section">
+                <div className="button-grid">
+                  <div className="btn-prixpoids">
+                    {totals.total}$ ({totals.weight} kg)
+                  </div>
+                  <button onClick={generateLibelle} disabled={cart.length === 0} className="btn-genererlibelle">
+                    <Icons.FileText />
+                    Générer libellé
+                  </button>
+                  <button onClick={resetForm} className="btn-reinitialiser">
+                    <Icons.RotateCcw />
+                    Réinitialiser
+                  </button>
+                </div>
+                <div className="button-grid">
+                  <button onClick={() => copyImageLink(carteChateauImage)} className="btn-cartechateau">
+                    <Icons.Copy />
+                    Carte du Château
+                  </button>
+                  <button onClick={() => setShowInfo('nouvel-arrivant')} className="btn-nouvelarrivant">
+                    <Icons.Users />
+                    Nouvel arrivant
+                  </button>
+                  <button onClick={() => setShowInfo('service-public')} className="btn-servicepublic">
+                    <Icons.Building2 />
+                    Paniers Service public
+                  </button>
+                </div>
+                <select value={entrepriseSelectionnee} onChange={(e) => setEntrepriseSelectionnee(e.target.value)} className="select-reduction">
+                  {entreprises.map((entreprise, idx) => (
+                    <option key={idx} value={entreprise.name}>
+                      {entreprise.displayName || entreprise.name} {entreprise.reduction > 0 && `(-${entreprise.reduction}%)`}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {showInfo === 'nouvel-arrivant' && (
+                <div className="popup-overlay" onClick={() => setShowInfo(null)}>
+                  <div className="popup-card" onClick={(e) => e.stopPropagation()}>
+                    <div className="popup-header">
+                      <div className="popup-icon-nouvelarrivant"><Icons.Users /></div>
+                      <div>
+                        <h3 className="popup-title">👋 Nouvel Arrivant</h3>
+                        <p className="popup-text">{infoNouvelArrivant}</p>
+                      </div>
                     </div>
-                    <button
-                      onClick={generateLibelle}
-                      disabled={cart.length === 0}
-                      className="flex items-center justify-center gap-2 px-4 py-3 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg transition-colors shadow-lg disabled:bg-gray-400 disabled:cursor-not-allowed"
-                    >
-                      <Icons.FileText />
-                      Générer libellé
-                    </button>
-                    <button
-                      onClick={resetForm}
-                      className="flex items-center justify-center gap-2 px-4 py-3 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors shadow-lg"
-                    >
-                      <Icons.RotateCcw />
-                      Réinitialiser
-                    </button>
-                  </div>
-                  <div className="grid grid-cols-3 gap-4">
-                    <button
-                      onClick={() => copyImageLink(carteChateauImage)}
-                      className="flex items-center justify-center gap-2 px-4 py-3 bg-amber-500 hover:bg-amber-600 text-white rounded-lg transition-colors shadow-lg"
-                    >
-                      <Icons.Copy />
-                      Carte du Château
-                    </button>
-                    <button
-                      onClick={() => setShowInfo('nouvel-arrivant')}
-                      className="flex items-center justify-center gap-2 px-4 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors shadow-lg"
-                    >
-                      <Icons.Users />
-                      Nouvel arrivant
-                    </button>
-                    <button
-                      onClick={() => setShowInfo('service-public')}
-                      className="flex items-center justify-center gap-2 px-4 py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors shadow-lg"
-                    >
-                      <Icons.Building2 />
-                      Service public
-                    </button>
-                  </div>
-                  <div>
-                    <select
-                      value={entrepriseSelectionnee}
-                      onChange={(e) => setEntrepriseSelectionnee(e.target.value)}
-                      className="w-full px-4 py-3 border-2 border-slate-600 bg-slate-700 text-white rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none font-medium"
-                    >
-                      {entreprises.map((entreprise, idx) => (
-                        <option key={idx} value={entreprise.name}>
-                          {entreprise.displayName || entreprise.name} {entreprise.reduction > 0 && `(-${entreprise.reduction}%)`}
-                        </option>
-                      ))}
-                    </select>
+                    <button onClick={() => setShowInfo(null)} className="btn-nouvelarrivant" style={{width: '100%'}}>Fermer</button>
                   </div>
                 </div>
-
-                {showInfo === 'nouvel-arrivant' && (
-                  <div className="fixed inset-0 bg-black/70 flex items-start justify-center z-50 p-4 pt-20" onClick={() => setShowInfo(null)}>
-                    <div className="bg-slate-800 border border-slate-700 rounded-xl shadow-2xl max-w-md w-full p-6 transform transition-all" onClick={(e) => e.stopPropagation()}>
-                      <div className="flex items-start gap-4 mb-4">
-                        <div className="bg-blue-900/50 p-3 rounded-full">
-                          <Icons.Users />
-                        </div>
-                        <div className="flex-1">
-                          <h3 className="font-bold text-xl text-white mb-2">👋 Nouvel Arrivant</h3>
-                          <p className="text-slate-300 leading-relaxed">
-                            {infoNouvelArrivant}
-                          </p>
-                        </div>
+              )}
+              
+              {showInfo === 'service-public' && (
+                <div className="popup-overlay" onClick={() => setShowInfo(null)}>
+                  <div className="popup-card" onClick={(e) => e.stopPropagation()}>
+                    <div className="popup-header">
+                      <div className="popup-icon-servicepublic"><Icons.Building2 /></div>
+                      <div>
+                        <h3 className="popup-title">🏢 Paniers Service Public</h3>
+                        <p className="popup-text">{infoServicePublic}</p>
                       </div>
-                      <button
-                        onClick={() => setShowInfo(null)}
-                        className="w-full mt-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
-                      >
-                        Fermer
-                      </button>
                     </div>
+                    <button onClick={() => setShowInfo(null)} className="btn-servicepublic" style={{width: '100%'}}>Fermer</button>
                   </div>
-                )}
-                
-                {showInfo === 'service-public' && (
-                  <div className="fixed inset-0 bg-black/70 flex items-start justify-center z-50 p-4 pt-20" onClick={() => setShowInfo(null)}>
-                    <div className="bg-slate-800 border border-slate-700 rounded-xl shadow-2xl max-w-md w-full p-6 transform transition-all" onClick={(e) => e.stopPropagation()}>
-                      <div className="flex items-start gap-4 mb-4">
-                        <div className="bg-green-900/50 p-3 rounded-full">
-                          <Icons.Building2 />
-                        </div>
-                        <div className="flex-1">
-                          <h3 className="font-bold text-xl text-white mb-2">🏢 Service Public</h3>
-                          <p className="text-slate-300 leading-relaxed">
-                            {infoServicePublic}
-                          </p>
-                        </div>
+                </div>
+              )}
+
+              {copied && (
+                <div className="copy-message">
+                  <Icons.CheckCircle />
+                  <span>{copiedMessage}</span>
+                </div>
+              )}
+
+              <div className="categories-container">
+                {Object.entries(products).map(([category, items]) => (
+                  <div key={category} className="category-card">
+                    <button onClick={() => toggleCategory(category)} className="category-header">
+                      <div className="category-title-container">
+                        <span className="category-emoji">{categoryEmojis[category]}</span>
+                        <h2 className="category-title">
+                          {category}
+                          <span className="category-count">({items.length} produits)</span>
+                        </h2>
                       </div>
-                      <button
-                        onClick={() => setShowInfo(null)}
-                        className="w-full mt-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors"
-                      >
-                        Fermer
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {copied && (
-                  <div className="mb-6 p-4 bg-green-900/50 border-l-4 border-green-500 rounded-lg flex items-center gap-2">
-                    <Icons.CheckCircle />
-                    <span className="text-green-300 font-medium">{copiedMessage}</span>
-                  </div>
-                )}
-
-                <div className="grid grid-cols-1 gap-8">
-                  <div className="space-y-6">
-                    {Object.entries(products).map(([category, items]) => (
-                      <div key={category} className="bg-slate-700/50 rounded-xl shadow-lg border border-slate-600 overflow-hidden">
-                        <button
-                          onClick={() => toggleCategory(category)}
-                          className="w-full p-6 flex items-center justify-between hover:bg-slate-700 transition-colors"
-                        >
-                          <h2 className="text-2xl font-bold text-white flex items-center gap-3">
-                            <span className="text-3xl">
-                              {category === 'Formules' ? '📦' : 
-                               category === 'Boissons' ? '🥤' : 
-                               category === 'Plats / Snacks' ? '🍽️' : 
-                               category === 'Vins' ? '🍷' : '🎃'}
-                            </span>
-                            {category}
-                            <span className="text-sm font-normal text-slate-400">({items.length} produits)</span>
-                          </h2>
-                          {expandedCategories[category] ? <Icons.ChevronDown /> : <Icons.ChevronRight />}
-                        </button>
-                        
-                        {expandedCategories[category] && (
-                          <div className="p-6 pt-0 animate-fadeIn">
-                            <div className="grid grid-cols-2 gap-4">
-                              {items.map((product, idx) => (
-                                <div key={idx} className="bg-slate-800 rounded-lg p-4 shadow-md hover:shadow-xl transition-shadow border border-slate-600">
-                                  <div className="flex justify-between items-start mb-3">
-                                    <div className="flex-1">
-                                      <h3 className="font-bold text-white mb-1">{product.name}</h3>
-                                      <p className="text-2xl font-bold text-purple-400">{product.price}$</p>
-                                      <p className="text-sm text-slate-400">Poids: {product.weight} kg</p>
-                                    </div>
-                                  </div>
-                                  <div className="flex items-center gap-2">
-                                    <button
-                                      onClick={() => decrementQuantity(product, category)}
-                                      className="w-10 h-10 bg-red-600 hover:bg-red-700 text-white rounded-lg font-bold text-xl transition-all transform hover:scale-110 flex items-center justify-center"
-                                    >
-                                      −
-                                    </button>
-                                    <input
-                                      type="number"
-                                      min="0"
-                                      value={getQuantity(product, category)}
-                                      onChange={(e) => updateQuantity(product, category, e.target.value)}
-                                      className="flex-1 px-3 py-2 border-2 border-slate-600 bg-slate-700 text-white rounded-lg text-center font-bold text-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none"
-                                    />
-                                    <button
-                                      onClick={() => incrementQuantity(product, category)}
-                                      className="w-10 h-10 bg-green-600 hover:bg-green-700 text-white rounded-lg font-bold text-xl transition-all transform hover:scale-110 flex items-center justify-center"
-                                    >
-                                      +
-                                    </button>
-                                  </div>
-                                </div>
-                              ))}
+                      <div className="category-icon">
+                        {expandedCategories[category] ? <Icons.ChevronDown /> : <Icons.ChevronRight />}
+                      </div>
+                    </button>
+                    
+                    {expandedCategories[category] && (
+                      <div className="category-content animate-fadeIn">
+                        <div className="product-grid">
+                          {items.map((product, idx) => (
+                            <div key={idx} className="product-card">
+                              <div className="product-header">
+                                <h3 className="product-name">{product.name}</h3>
+                                <p className="product-price">{product.price}$</p>
+                                <p className="product-weight">Poids: {product.weight} kg</p>
+                              </div>
+                              <div className="quantity-controls">
+                                <button onClick={() => decrementQuantity(product, category)} className="btn-moins">−</button>
+                                <input
+                                  type="number"
+                                  min="0"
+                                  value={getQuantity(product, category)}
+                                  onChange={(e) => updateQuantity(product, category, e.target.value)}
+                                  className="quantity-input"
+                                />
+                                <button onClick={() => incrementQuantity(product, category)} className="btn-plus">+</button>
+                              </div>
                             </div>
-                          </div>
-                        )}
+                          ))}
+                        </div>
                       </div>
-                    ))}
+                    )}
                   </div>
-                </div>
+                ))}
               </div>
             </div>
           </div>
