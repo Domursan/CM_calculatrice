@@ -663,6 +663,13 @@
           { name: 'Côtes Ombre Noires', price: 100, weight: 1, info: "Côtes Ombres Noires" },
           { name: 'Ragoût Sacré', price: 100, weight: 0.5, info: "Ragoût Sacré" },
           { name: 'Filet Rouge', price: 100, weight: 1, info: "Filet Rouge" }
+        ],
+        'Noël 2025': [
+          { name: 'Calendrier de l Avent', price: 1000, weight: 0, info: "" },
+          { name: 'Plat 1', price: 1000000, weight: 1, info: "" },
+          { name: 'Plat 2', price: 1000000, weight: 1, info: "" },
+          { name: 'Plat 3', price: 1000000, weight: 1, info: "" },
+          { name: 'Cuvée de Noël 2025', price: 1000000, weight: 1, info: "Cuvée de Noël 2025" }
         ]
       };
 
@@ -673,7 +680,7 @@
       const entreprises = [
         { name: "Aucune", reduction: 0, displayName: "Réduction" },
         { name: "BlueBird", reduction: 20 },
-        { name: "DMC", reduction: 20 },
+        { name: "DMC", reduction: 0 },
         { name: "NG", reduction: 20 },
         { name: "Carl Jr", reduction: 20 },
         { name: "TN", reduction: 20 },
@@ -779,7 +786,8 @@
         'Boissons': '🥤',
         'Plats / Snacks': '🍽️',
         'Vins': '🍷',
-        'Halloween 2025': '🎃'
+        'Halloween 2025': '🎃',
+        'Noël 2025': '🎅'
       };
 
       return (
@@ -939,4 +947,3 @@
   </script>
 </body>
 </html>
-
