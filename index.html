@@ -740,8 +740,6 @@
         
         if (entreprise && entreprise.reduction > 0) {
           libelle += ` -${entreprise.reduction}% ${entreprise.name}`;
-        } else if (entreprise && entreprise.name !== "Aucune") {
-          libelle += ` ${entreprise.name}`;
         }
 
         return libelle;
@@ -992,4 +990,5 @@
   </script>
 </body>
 </html>
+
 
